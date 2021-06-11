@@ -14,4 +14,7 @@ public class EndpointProperties {
 	@Value("${similar.products}")
 	private String similarProducts;
 	
+	@Value("${products.info}")
+	private String productInfo;
+	
 }
