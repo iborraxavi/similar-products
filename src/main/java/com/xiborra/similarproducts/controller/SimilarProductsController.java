@@ -14,6 +14,12 @@ import com.xiborra.similarproducts.service.SimilarProductsService;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Endpoints para obtener los productos similares de un producto
+ * 
+ * @author xiborra
+ *
+ */
 @RestController
 @Slf4j
 public class SimilarProductsController {
@@ -21,8 +27,16 @@ public class SimilarProductsController {
 	@Autowired
 	private SimilarProductsService similarProductsService;
 
+	/**
+	 * Endpoint a partir del que se obtiene la información relativa a los productor
+	 * similares a partir del id del parámetro
+	 * 
+	 * @param productId ID del producto del que se quiere obtener los productos
+	 *                  similares
+	 * @return Lista de productos similares al del que se indica en el parametro
+	 */
 	@GetMapping("/product/{productId}/similar")
-	public List<Product> findSimilarProducts(@PathVariable("productId") Integer productId) {
+	public List<Product> findSimilarProducts(@PathVariable(name = "productId", required = true) Integer productId) {
 		List<Product> products = null;
 		try {
 			products = similarProductsService.findSimilarProductsById(productId);

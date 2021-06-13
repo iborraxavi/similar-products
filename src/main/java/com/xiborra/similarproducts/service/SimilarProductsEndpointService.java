@@ -1,6 +1,7 @@
 package com.xiborra.similarproducts.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -17,6 +18,12 @@ import com.xiborra.similarproducts.properties.EndpointProperties;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Gestión de las llamadas a los endpoints de productos similares
+ * 
+ * @author xiborra
+ *
+ */
 @Service
 @Slf4j
 public class SimilarProductsEndpointService {
@@ -31,6 +38,15 @@ public class SimilarProductsEndpointService {
 	@Autowired
 	private RestTemplate restTemplate;
 
+	/**
+	 * Envia la petición al endpoint en el que se obtienen los IDs de los productos
+	 * similares
+	 * 
+	 * @param productId ID del producto del que queremos obtener los productos
+	 *                  similares
+	 * @return Lista de productos similares
+	 * @throws CustomExtractDataException Error de conexión con el Endpoint
+	 */
 	public Integer[] sendSimilarProductsRequest(Integer productId) throws CustomExtractDataException {
 		ResponseEntity<Integer[]> similarProductsResponse = restTemplate.getForEntity(
 				endpointProperties.getSimilarProducts().replace(SIMILAR_PRODUCTS_ENDPOINT_FLAG, productId.toString()),
@@ -42,6 +58,15 @@ public class SimilarProductsEndpointService {
 				"Send similar products request with response code: " + similarProductsResponse.getStatusCodeValue());
 	}
 
+	/**
+	 * Envia una petición al endpoint por cada uno de los IDs que vienen en el
+	 * parametro de entrada, se hace de forma asíncrona para mejorar el rendimiento
+	 * 
+	 * @param productIds IDs de los productos sobre los que queremos obtener la
+	 *                   información
+	 * @return Lista de productos con la información requerida y ordenados por
+	 *         disponibilidad y precio
+	 */
 	public List<Product> sendProductInfoRequests(Integer[] productIds) {
 		// Realizamos las peticiones de forma concurrente, las guardamos en una lista
 		// para poder controlar cuando han terminado todas para parsear la respuesta
@@ -75,6 +100,7 @@ public class SimilarProductsEndpointService {
 				log.error(e.getMessage(), e);
 			}
 		}
+		Collections.sort(responseProducts);
 		return responseProducts;
 	}
 
